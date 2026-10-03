@@ -357,7 +357,37 @@ def _dispatch_notification(
     s = _get_or_create_settings(db)
 
     # -----------------------------------------------------------------------
-    # 1. Try SMTP if credentials are provided.
+    # 1. Mock mode takes HIGHEST priority — skip all real email delivery.
+    # -----------------------------------------------------------------------
+
+    if cfg.MOCK_EMAIL:
+        otp_hint = ""
+        if notification.subject and "OTP" in notification.subject:
+            import re
+            m = re.search(r'\b(\d{6})\b', notification.subject)
+            if m:
+                otp_hint = f" | OTP: {m.group(1)}"
+
+        print(
+            f"[MOCK EMAIL] To: {notification.recipient_email}"
+            f" | Subject: {notification.subject}"
+            f"{otp_hint}"
+        )
+
+        notification.status = NotificationStatus.sent
+        notification.sent_at = datetime.utcnow()
+        notification.provider_message_id = (
+            f"mock-{notification.id}-"
+            f"{int(datetime.utcnow().timestamp())}"
+        )
+        notification.error_summary = (
+            "Dispatched in Mock Mode. No real email was sent."
+        )
+        db.commit()
+        return
+
+    # -----------------------------------------------------------------------
+    # 2. Try SMTP if credentials are provided.
     # -----------------------------------------------------------------------
 
     smtp_user = (
@@ -401,7 +431,7 @@ def _dispatch_notification(
         return
 
     # -----------------------------------------------------------------------
-    # 2. Try Gmail OAuth if configured.
+    # 3. Try Gmail OAuth if configured.
     # -----------------------------------------------------------------------
 
     if cfg.GMAIL_REFRESH_TOKEN and cfg.GMAIL_CLIENT_ID:
@@ -481,32 +511,18 @@ def _dispatch_notification(
             return
 
     # -----------------------------------------------------------------------
-    # 3. Mock mode is allowed only when explicitly enabled.
+    # 4. No delivery method configured.
     # -----------------------------------------------------------------------
 
-    if cfg.MOCK_EMAIL:
-        notification.status = NotificationStatus.sent
+    notification.status = NotificationStatus.failed
 
-        notification.sent_at = datetime.utcnow()
+    notification.error_summary = (
+        "Real email delivery is not configured. "
+        "Set GMAIL_SENDER_EMAIL and GMAIL_APP_PASSWORD "
+        "(or SMTP_USER and SMTP_PASSWORD) "
+        "when MOCK_EMAIL=false."
+    )
 
-        notification.provider_message_id = (
-            f"mock-{notification.id}-"
-            f"{int(datetime.utcnow().timestamp())}"
-        )
-
-        notification.error_summary = (
-            "Dispatched in Mock Mode. No real email was sent."
-        )
-
-    else:
-        notification.status = NotificationStatus.failed
-
-        notification.error_summary = (
-            "Real email delivery is not configured. "
-            "Set GMAIL_SENDER_EMAIL and GMAIL_APP_PASSWORD "
-            "(or SMTP_USER and SMTP_PASSWORD) "
-            "when MOCK_EMAIL=false."
-        )
 
     db.commit()
 
