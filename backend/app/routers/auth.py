@@ -33,6 +33,7 @@ router = APIRouter(
 )
 
 settings = get_settings()
+cfg = settings
 
 
 # In-memory OTP storage:
@@ -273,7 +274,7 @@ def login_init(
             ),
         )
 
-    is_mock = cfg.MOCK_EMAIL or cfg.ENVIRONMENT == "development"
+    is_mock = settings.MOCK_EMAIL or settings.ENVIRONMENT == "development"
     dev_otp_val = otp_code if is_mock else None
     otp_suffix = f" [Mock Mode: Your OTP is {otp_code}]" if is_mock else ""
 
@@ -637,7 +638,7 @@ def resend_otp(
             ),
         )
 
-    is_mock = cfg.MOCK_EMAIL or cfg.ENVIRONMENT == "development"
+    is_mock = settings.MOCK_EMAIL or settings.ENVIRONMENT == "development"
     dev_otp_val = otp_code if is_mock else None
     otp_suffix = f" [Mock Mode: Your OTP is {otp_code}]" if is_mock else ""
 
