@@ -71,6 +71,64 @@ def _get_or_create_settings(db: Session) -> NotificationSetting:
     return s
 
 
+def _send_brevo_delivery(
+    recipient_email: str,
+    subject: str,
+    message_text: str,
+    html_body: str = None,
+) -> tuple[bool, str]:
+    """Sends real email via Brevo HTTP API (port 443, never blocked by cloud firewalls)."""
+    api_key = cfg.BREVO_API_KEY
+    if not api_key:
+        return False, "BREVO_API_KEY is not configured"
+
+    sender_email = (
+        cfg.BREVO_SENDER_EMAIL
+        or cfg.GMAIL_SENDER_EMAIL
+        or "karunesh128@gmail.com"
+    )
+    sender_name = cfg.BREVO_SENDER_NAME or "EduPulse - KPRIET"
+
+    try:
+        import httpx
+
+        payload = {
+            "sender": {
+                "name": sender_name,
+                "email": sender_email,
+            },
+            "to": [
+                {
+                    "email": recipient_email.lower().strip(),
+                }
+            ],
+            "subject": subject,
+            "textContent": message_text,
+        }
+        if html_body:
+            payload["htmlContent"] = html_body
+
+        resp = httpx.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "api-key": api_key,
+                "Content-Type": "application/json",
+                "accept": "application/json",
+            },
+            json=payload,
+            timeout=15.0,
+        )
+
+        if resp.status_code in (200, 201, 202):
+            msg_id = resp.json().get("messageId", "brevo-sent")
+            return True, f"Email sent via Brevo (messageId: {msg_id})"
+        else:
+            return False, f"Brevo API error ({resp.status_code}): {resp.text[:300]}"
+
+    except Exception as e:
+        return False, f"Brevo HTTP error: {str(e)}"
+
+
 def _send_smtp_delivery(
     recipient_email: str,
     subject: str,
@@ -357,7 +415,34 @@ def _dispatch_notification(
     s = _get_or_create_settings(db)
 
     # -----------------------------------------------------------------------
-    # 1. Mock mode takes HIGHEST priority — skip all real email delivery.
+    # 1. Brevo HTTP API (Highest Priority Real Delivery — Port 443, Render Free Safe)
+    # -----------------------------------------------------------------------
+    if cfg.BREVO_API_KEY:
+        success, message = _send_brevo_delivery(
+            notification.recipient_email,
+            notification.subject,
+            notification.message,
+            html_body=html_body,
+        )
+        if success:
+            notification.status = NotificationStatus.sent
+            notification.sent_at = datetime.utcnow()
+            notification.provider_message_id = (
+                f"brevo-{notification.id}-"
+                f"{int(datetime.utcnow().timestamp())}"
+            )
+            notification.error_summary = None
+            db.commit()
+            return
+        else:
+            print(f"[BREVO EMAIL ERROR] {message}")
+            notification.status = NotificationStatus.failed
+            notification.error_summary = message[:500]
+            db.commit()
+            return
+
+    # -----------------------------------------------------------------------
+    # 2. Mock mode — used only when MOCK_EMAIL=true and no real API is set.
     # -----------------------------------------------------------------------
 
     if cfg.MOCK_EMAIL:

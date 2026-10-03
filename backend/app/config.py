@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+    BREVO_API_KEY: str = ""
+    BREVO_SENDER_EMAIL: str = ""
+    BREVO_SENDER_NAME: str = "EduPulse - KPRIET"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
