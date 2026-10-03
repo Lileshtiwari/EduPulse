@@ -2,6 +2,7 @@ import os
 from typing import List, Dict, Any, Optional
 
 PUBLIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public"))
+ASSET_BASE_URL = "https://edu-pulse-rho.vercel.app"
 
 def build_official_alert_html_email(
     student_name: str,
@@ -81,7 +82,7 @@ def build_official_alert_html_email(
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="left" style="vertical-align:middle;">
-                    <img src="cid:logo_img" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
+                    <img src="{ASSET_BASE_URL}/logo.png" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
                   </td>
                   <td align="right" style="vertical-align:middle;">
                     <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">Academic Alert</div>
@@ -173,7 +174,7 @@ def build_official_alert_html_email(
                   <!-- Right side: Student Card Avatar Image -->
                   <td width="150" align="center" style="vertical-align:middle;">
                     <div style="width:135px;height:165px;border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.06);background:#f1f5f9;">
-                      <img src="cid:card_img" alt="Student Profile" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                      <img src="{ASSET_BASE_URL}/{card_filename or 'student_card.png'}" alt="Student Profile" style="width:100%;height:100%;object-fit:cover;display:block;" />
                     </div>
                   </td>
                 </tr>
@@ -276,7 +277,7 @@ def build_official_alert_html_email(
                     <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Coimbatore &ndash; 641 407</div>
                   </td>
                   <td align="right" style="vertical-align:middle;">
-                    <img src="cid:instuite_img" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
+                    <img src="{ASSET_BASE_URL}/instuite.png" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
                   </td>
                 </tr>
               </table>
@@ -325,7 +326,7 @@ def build_otp_html_email(
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="left" style="vertical-align:middle;">
-                    <img src="cid:logo_img" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
+                    <img src="{ASSET_BASE_URL}/logo.png" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
                   </td>
                   <td align="right" style="vertical-align:middle;">
                     <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">Secure Verification</div>
@@ -396,7 +397,7 @@ def build_otp_html_email(
                   <!-- Right side: Profile / Role Image -->
                   <td width="130" align="center" style="vertical-align:middle;">
                     <div style="width:120px;height:140px;border-radius:14px;overflow:hidden;border:2px solid #e2e8f0;box-shadow:0 4px 10px rgba(0,0,0,0.06);background:#f1f5f9;">
-                      <img src="cid:card_img" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                      <img src="{ASSET_BASE_URL}/{card_filename or 'student_card.png'}" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
                     </div>
                   </td>
                 </tr>
@@ -441,7 +442,7 @@ def build_otp_html_email(
                     <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Coimbatore &ndash; 641 407</div>
                   </td>
                   <td align="right" style="vertical-align:middle;">
-                    <img src="cid:instuite_img" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
+                    <img src="{ASSET_BASE_URL}/instuite.png" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
                   </td>
                 </tr>
               </table>
@@ -519,7 +520,7 @@ def build_account_welcome_html_email(
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="left" style="vertical-align:middle;">
-                    <img src="cid:logo_img" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
+                    <img src="{ASSET_BASE_URL}/logo.png" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
                   </td>
                   <td align="right" style="vertical-align:middle;">
                     <div style="font-size:18px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">Account Provisioned</div>
@@ -593,7 +594,7 @@ def build_account_welcome_html_email(
                   <!-- Right side: Profile Card Photo -->
                   <td width="135" align="center" style="vertical-align:middle;">
                     <div style="width:125px;height:150px;border-radius:14px;overflow:hidden;border:2px solid #e2e8f0;box-shadow:0 4px 10px rgba(0,0,0,0.06);background:#f1f5f9;">
-                      <img src="cid:card_img" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                      <img src="{ASSET_BASE_URL}/{card_filename or 'student_card.png'}" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
                     </div>
                   </td>
                 </tr>
@@ -651,7 +652,7 @@ def build_account_welcome_html_email(
                     <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Coimbatore &ndash; 641 407</div>
                   </td>
                   <td align="right" style="vertical-align:middle;">
-                    <img src="cid:instuite_img" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
+                    <img src="{ASSET_BASE_URL}/instuite.png" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
                   </td>
                 </tr>
               </table>
@@ -698,7 +699,7 @@ def build_contact_message_html_email(
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="left" style="vertical-align:middle;">
-                    <img src="cid:logo_img" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
+                    <img src="{ASSET_BASE_URL}/logo.png" alt="EduPulse" style="height:44px;max-width:180px;object-fit:contain;display:block;" />
                   </td>
                   <td align="right" style="vertical-align:middle;">
                     <div style="font-size:16px;font-weight:800;color:#0f172a;letter-spacing:-0.3px;">Portal Notification</div>
@@ -797,7 +798,7 @@ def build_contact_message_html_email(
                     <div style="font-size:11px;color:#94a3b8;margin-top:1px;">Coimbatore &ndash; 641 407</div>
                   </td>
                   <td align="right" style="vertical-align:middle;">
-                    <img src="cid:instuite_img" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
+                    <img src="{ASSET_BASE_URL}/instuite.png" alt="KPR Institute of Engineering and Technology" style="height:48px;max-width:180px;object-fit:contain;display:block;margin-left:auto;" />
                   </td>
                 </tr>
               </table>
