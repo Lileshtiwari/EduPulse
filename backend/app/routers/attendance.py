@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import (
     AttendanceSession, AttendanceRecord, Course, Enrollment, User, UserRole,
-    NotificationSetting, AttendanceStatus
+    NotificationSetting, AttendanceStatus, Department
 )
 from app.schemas import (
     AttendanceSessionCreate, AttendanceSessionOut, AttendanceRecordIn,
