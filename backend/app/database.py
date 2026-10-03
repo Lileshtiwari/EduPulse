@@ -4,9 +4,16 @@ from app.config import get_settings
 
 settings = get_settings()
 
+# Render (and some providers) give a DATABASE_URL starting with "postgresql://"
+# SQLAlchemy 2.x defaults to psycopg3 for that scheme, but we use psycopg2-binary.
+# Force psycopg2 by rewriting the scheme.
+_db_url = settings.DATABASE_URL
+if _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+
 engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args={"check_same_thread": False, "timeout": 15} if "sqlite" in settings.DATABASE_URL else {},
+    _db_url,
+    connect_args={"check_same_thread": False, "timeout": 15} if "sqlite" in _db_url else {},
     echo=False,
 )
 
