@@ -3,9 +3,10 @@ Professors router — faculty dashboard data
 """
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import User, UserRole, Course, Enrollment, AttendanceSession, AttendanceRecord, Mark
+from app.models import User, UserRole, Course, Enrollment, AttendanceSession, AttendanceRecord, Mark, AttendanceStatus
 from app.schemas import UserOut
 from app.dependencies import get_current_user, require_admin, require_professor_or_admin
 
@@ -54,7 +55,6 @@ def professor_dashboard(
         }
 
     from app.routers.attendance import _get_settings
-    from sqlalchemy import func
     settings = _get_settings(db)
     course_ids = [c.id for c in courses]
 
