@@ -45,6 +45,15 @@ function Topbar({ title }: TopbarProps) {
     else navigate('/student/notifications')
   }
 
+  const getInitials = (name?: string) => {
+    if (!name) return 'U'
+    const cleaned = name.replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i, '').trim()
+    const parts = cleaned.split(/\s+/).filter(Boolean)
+    if (parts.length === 0) return 'U'
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
+
   return (
     <header className="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30 pl-14 lg:pl-6">
       <div className="flex items-center gap-4">
@@ -79,20 +88,19 @@ function Topbar({ title }: TopbarProps) {
         </button>
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden shadow-xs border border-slate-200"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden shadow-xs border border-slate-200 relative select-none flex-shrink-0"
             style={{ backgroundColor: '#174A8B' }}
           >
-            {user?.profile_image ? (
+            <span className="tracking-wider">{getInitials(user?.full_name)}</span>
+            {user?.profile_image && (
               <img
                 src={user.profile_image}
-                alt={user.full_name}
-                className="w-full h-full object-cover object-top"
+                alt={user.full_name || 'Profile'}
+                className="absolute inset-0 w-full h-full object-cover object-top"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
                 }}
               />
-            ) : (
-              user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
             )}
           </div>
           <div className="hidden sm:block">

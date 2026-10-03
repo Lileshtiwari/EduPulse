@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
     ENVIRONMENT: str = "development"
-    FRONTEND_URL: str = "http://localhost:5173"
+    FRONTEND_URL: str = "https://edu-pulse-rho.vercel.app"
     MOCK_EMAIL: bool = False
     GMAIL_CLIENT_ID: str = ""
     GMAIL_CLIENT_SECRET: str = ""

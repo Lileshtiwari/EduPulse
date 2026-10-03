@@ -584,7 +584,7 @@ def build_account_welcome_html_email(
                     <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;border-collapse:separate;border-spacing:0;">
                       <tr style="background:#f8fafc;">
                         <td style="padding:9px 12px;font-size:11px;color:#64748b;font-weight:700;border-bottom:1px solid #e2e8f0;">Portal Address</td>
-                        <td style="padding:9px 12px;font-size:12px;font-weight:700;color:#2563eb;border-bottom:1px solid #e2e8f0;">http://localhost:5173</td>
+                        <td style="padding:9px 12px;font-size:12px;font-weight:700;color:#2563eb;border-bottom:1px solid #e2e8f0;">{ASSET_BASE_URL}</td>
                       </tr>
                       <tr>
                         <td style="padding:9px 12px;font-size:11px;color:#64748b;font-weight:700;border-bottom:1px solid #e2e8f0;">{id_label}</td>
@@ -645,7 +645,7 @@ def build_account_welcome_html_email(
                   &#128073; Steps to Sign In:
                 </div>
                 <ol style="margin:0;padding-left:18px;font-size:12px;color:#475569;line-height:1.7;">
-                  <li>Visit EduPulse homepage at <a href="http://localhost:5173" style="color:#2563eb;font-weight:700;text-decoration:none;">http://localhost:5173</a>.</li>
+                  <li>Visit EduPulse homepage at <a href="{ASSET_BASE_URL}" style="color:#2563eb;font-weight:700;text-decoration:none;">{ASSET_BASE_URL}</a>.</li>
                   <li>Click on the <strong>{portal_name}</strong> card.</li>
                   <li>Enter your login email (<code>{email}</code>) and your initial password (<code>{password}</code>).</li>
                   <li>Enter the secure 6-digit OTP code dispatched to this email to verify your session.</li>

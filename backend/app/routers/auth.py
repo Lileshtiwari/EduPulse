@@ -66,6 +66,8 @@ def login_init(
 
     if email_clean == "23cs263@kpriet.ac.in":
         email_clean = "24cs263@kpriet.ac.in"
+    elif email_clean in ["prof.sharma@kpriet.ac.in", "priya.sharma@kpriet.ac.in"]:
+        email_clean = "karunesh789tiwari@gmail.com"
 
     user = (
         db.query(User)
@@ -109,6 +111,8 @@ def login_init(
             in [
                 "Faculty@123",
                 "Faculty@1234",
+                "Prof@123",
+                "Prof@1234",
             ]
         ):
             valid_pw = True
@@ -314,6 +318,8 @@ def verify_otp(
 
     if email_key == "23cs263@kpriet.ac.in":
         email_key = "24cs263@kpriet.ac.in"
+    elif email_key in ["prof.sharma@kpriet.ac.in", "priya.sharma@kpriet.ac.in"]:
+        email_key = "karunesh789tiwari@gmail.com"
 
     submitted_otp = str(
         payload.otp
@@ -489,6 +495,8 @@ def resend_otp(
 
     if email_key == "23cs263@kpriet.ac.in":
         email_key = "24cs263@kpriet.ac.in"
+    elif email_key in ["prof.sharma@kpriet.ac.in", "priya.sharma@kpriet.ac.in"]:
+        email_key = "karunesh789tiwari@gmail.com"
 
     user = (
         db.query(User)

@@ -243,6 +243,7 @@ def create_user(
 
     courses_summary_text = "\n".join([f"• {c['course_code']} - {c['course_name']}" for c in assigned_courses_data]) if assigned_courses_data else f"• General curriculum under {dept_name}"
 
+    portal_base_url = "https://edu-pulse-rho.vercel.app"
     welcome_subject = f"[EduPulse] Welcome to KPRIET — Your {portal_name} Login Credentials"
     welcome_message = (
         f"OFFICIAL ACCOUNT PROVISIONING NOTICE\n"
@@ -251,7 +252,7 @@ def create_user(
         f"Dear {user.full_name},\n\n"
         f"Your official {portal_name} account has been successfully provisioned by the Academic Administrator.\n\n"
         f"YOUR LOGIN CREDENTIALS:\n"
-        f"• Portal URL: http://localhost:5173\n"
+        f"• Portal URL: {portal_base_url}\n"
         f"• Role: {user.role.value.capitalize()}\n"
         f"• Registered Email: {user.email}\n"
         f"• {identifier_label}: {identifier_val or 'N/A'}\n"
@@ -260,7 +261,7 @@ def create_user(
         f"ASSIGNED COURSES:\n"
         f"{courses_summary_text}\n\n"
         f"SECURITY NOTICE:\n"
-        f"1. To log in, visit http://localhost:5173, select '{portal_name}', and enter your email and password.\n"
+        f"1. To log in, visit {portal_base_url}, select '{portal_name}', and enter your email and password.\n"
         f"2. A secure 6-digit OTP verification code will be dispatched to this email address to verify your session.\n"
         f"3. Please keep your login credentials strictly confidential.\n\n"
         f"Office of the Academic Administrator\n"

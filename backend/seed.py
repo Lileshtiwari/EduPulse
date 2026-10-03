@@ -76,7 +76,7 @@ db.commit()
 print("  Creating professors...")
 professors_data = [
     dict(full_name="Dr. Priya Sharma", email="karunesh789tiwari@gmail.com",
-         password="Prof@123", faculty_id="FAC001", dept="CSE"),
+         password="Prof@1234", faculty_id="FAC001", dept="CSE"),
     dict(full_name="Dr. Arjun Nair", email="arjun.nair@kpriet.ac.in",
          password="Prof@123", faculty_id="FAC002", dept="CSE"),
     dict(full_name="Dr. Karan Mehta", email="karan.mehta@kpriet.ac.in",
@@ -349,7 +349,7 @@ print("""
 
 Demo Accounts:
   Admin:     admin@edupulse.kpriet.ac.in  / Admin@123
-  Professor: priya.sharma@kpriet.ac.in    / Prof@123
+  Professor: karunesh789tiwari@gmail.com  / Prof@1234
   Student:   24cs263@kpriet.ac.in         / Student@123
 
 Run backend: uvicorn app.main:app --reload
