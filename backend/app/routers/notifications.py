@@ -82,21 +82,21 @@ def _send_smtp_delivery(
     """Sends real email via SMTP using stored settings or env fallback. Supports optional HTML body and inline CID images."""
 
     host = s.smtp_host or cfg.SMTP_HOST or "smtp.gmail.com"
-    port = s.smtp_port or cfg.SMTP_PORT or 587
+    port = s.smtp_port or cfg.SMTP_PORT or 465
 
-    # Use SMTP_USER first, then sender email as fallback.
-    user = s.smtp_user or cfg.SMTP_USER or cfg.GMAIL_SENDER_EMAIL
+    # Use GMAIL_SENDER_EMAIL first, then stored settings, then SMTP_USER fallback.
+    user = cfg.GMAIL_SENDER_EMAIL or s.smtp_user or cfg.SMTP_USER
 
-    # Use SMTP_PASSWORD first, then Gmail App Password as fallback.
-    password = s.smtp_password or cfg.SMTP_PASSWORD or cfg.GMAIL_APP_PASSWORD
+    # Use GMAIL_APP_PASSWORD first, then stored settings, then SMTP_PASSWORD fallback.
+    password = cfg.GMAIL_APP_PASSWORD or s.smtp_password or cfg.SMTP_PASSWORD
 
-    sender = s.smtp_from_email or cfg.GMAIL_SENDER_EMAIL or user
+    sender = cfg.GMAIL_SENDER_EMAIL or s.smtp_from_email or user
 
     if not user or not password:
         return (
             False,
-            "SMTP user or password not configured. "
-            "Please enter your email and App Password in Notification Settings.",
+            "Gmail SMTP credentials not configured. "
+            "Please set GMAIL_SENDER_EMAIL and GMAIL_APP_PASSWORD in environment variables or Notification Settings.",
         )
 
     try:
@@ -180,14 +180,20 @@ def _send_smtp_delivery(
 
         for attempt in range(2):
             try:
-                server = smtplib.SMTP(
-                    host,
-                    port,
-                    timeout=30,
-                )
-
-                if s.smtp_use_tls is not False:
-                    server.starttls()
+                if port == 465:
+                    server = smtplib.SMTP_SSL(
+                        host,
+                        port,
+                        timeout=30,
+                    )
+                else:
+                    server = smtplib.SMTP(
+                        host,
+                        port,
+                        timeout=30,
+                    )
+                    if s.smtp_use_tls is not False:
+                        server.starttls()
 
                 server.login(
                     user,
@@ -355,15 +361,15 @@ def _dispatch_notification(
     # -----------------------------------------------------------------------
 
     smtp_user = (
-        s.smtp_user
+        cfg.GMAIL_SENDER_EMAIL
+        or s.smtp_user
         or cfg.SMTP_USER
-        or cfg.GMAIL_SENDER_EMAIL
     )
 
     smtp_pass = (
-        s.smtp_password
+        cfg.GMAIL_APP_PASSWORD
+        or s.smtp_password
         or cfg.SMTP_PASSWORD
-        or cfg.GMAIL_APP_PASSWORD
     )
 
     if smtp_user and smtp_pass:
@@ -497,8 +503,8 @@ def _dispatch_notification(
 
         notification.error_summary = (
             "Real email delivery is not configured. "
-            "Set SMTP_USER and SMTP_PASSWORD "
-            "(or GMAIL_SENDER_EMAIL and GMAIL_APP_PASSWORD) "
+            "Set GMAIL_SENDER_EMAIL and GMAIL_APP_PASSWORD "
+            "(or SMTP_USER and SMTP_PASSWORD) "
             "when MOCK_EMAIL=false."
         )
 
