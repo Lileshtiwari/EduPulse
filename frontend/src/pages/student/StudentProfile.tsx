@@ -1,35 +1,75 @@
 import React, { useEffect, useState } from 'react'
 import { DashboardLayout } from '../../components/layout/DashboardLayout'
-import { User, Mail, Phone, Building, GraduationCap, CheckCircle2, Save } from 'lucide-react'
+import { User, CheckCircle2, Save, Upload, RotateCcw, Camera } from 'lucide-react'
 import api from '../../lib/api'
 import { useAuth } from '../../contexts/AuthContext'
 import { useT, getLang } from '../../lib/translations'
 
 export default function StudentProfile() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const { t, lang } = useT(user?.lang_pref || getLang())
   const [profile, setProfile] = useState<any>(null)
   const [phone, setPhone] = useState('')
+  const [profileImage, setProfileImage] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
+
+  const defaultImage = '/student_card.png'
 
   useEffect(() => {
     api.get('/students/me/profile')
       .then(res => {
         setProfile(res.data)
         setPhone(res.data.phone || '')
+        setProfileImage(res.data.profile_image || defaultImage)
       })
       .finally(() => setLoading(false))
   }, [])
 
+  const handleImageCompressAndSet = (file: File, callback: (base64: string) => void) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new (window as any).Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const maxDim = 400
+        let w = img.width
+        let h = img.height
+        if (w > h && w > maxDim) {
+          h = Math.round((h * maxDim) / w)
+          w = maxDim
+        } else if (h > maxDim) {
+          w = Math.round((w * maxDim) / h)
+          h = maxDim
+        }
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        ctx?.drawImage(img, 0, 0, w, h)
+        const compressed = canvas.toDataURL('image/jpeg', 0.85)
+        callback(compressed)
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSaving(true)
     try {
-      await api.patch('/students/me/profile', { phone })
-      setToast(lang === 'ta' ? 'சுயவிவரம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!' : 'Profile updated successfully!')
+      const res = await api.patch('/students/me/profile', { phone, profile_image: profileImage })
+      setProfile(res.data)
+      if (updateUser && user) {
+        updateUser({ ...user, ...res.data })
+      }
+      setToast(lang === 'ta' ? 'சுயவிவரம் மற்றும் படம் வெற்றிகரமாக புதுப்பிக்கப்பட்டது!' : 'Profile and photo updated successfully!')
       setTimeout(() => setToast(null), 4000)
     } catch (err: any) {
       alert(err?.response?.data?.detail || (lang === 'ta' ? 'புதுப்பிக்க முடியவில்லை' : 'Failed to update'))
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -55,19 +95,75 @@ export default function StudentProfile() {
       </div>
 
       <div className="max-w-2xl bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
-        <div className="flex items-center gap-5 pb-6 border-b border-slate-100 mb-6">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-100 to-indigo-50 border border-slate-200 shadow-sm flex flex-col items-center justify-center text-slate-700 relative overflow-hidden">
-            <span className="text-xl font-black text-[#174A8B]">
-              {profile?.full_name?.slice(0, 2).toUpperCase() || 'ST'}
-            </span>
-            <span className="text-[9px] font-mono text-slate-400 mt-0.5">image.png</span>
+        <div className="flex items-center gap-6 pb-6 border-b border-slate-100 mb-6">
+          {/* Profile Photo with Upload Controls */}
+          <div className="relative group flex-shrink-0">
+            <div className="w-20 h-24 rounded-2xl overflow-hidden border-2 border-blue-200 shadow-sm bg-slate-100 flex items-center justify-center">
+              <img
+                src={profileImage || profile?.profile_image || defaultImage}
+                alt={profile?.full_name || 'Student Photo'}
+                className="w-full h-full object-cover object-top"
+                onError={(e) => { e.currentTarget.src = defaultImage }}
+              />
+            </div>
+            <label
+              className="absolute -bottom-2 -right-2 p-1.5 bg-[#174A8B] hover:bg-[#123868] text-white rounded-full shadow-md cursor-pointer transition-transform hover:scale-110 flex items-center justify-center"
+              title="Upload Photo / புகைப்படம் பதிவேற்றுக"
+            >
+              <Camera size={13} />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    handleImageCompressAndSet(file, (compressed) => {
+                      setProfileImage(compressed)
+                    })
+                  }
+                }}
+              />
+            </label>
           </div>
 
-          <div>
+          <div className="flex-1">
             <h2 className="text-xl font-bold text-slate-900">{profile?.full_name}</h2>
-            <div className="text-xs font-mono text-slate-500">{profile?.student_id} • {profile?.email}</div>
-            <div className="mt-1 inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">
-              {lang === 'ta' ? 'நடப்பு மாணவர் நிலை' : 'Active Student Status'}
+            <div className="text-xs font-mono text-slate-500 mt-0.5">{profile?.student_id} • {profile?.email}</div>
+            
+            <div className="mt-2.5 flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">
+                {lang === 'ta' ? 'நடப்பு மாணவர் நிலை' : 'Active Student Status'}
+              </div>
+              
+              <label className="text-[11px] font-bold text-[#174A8B] hover:underline inline-flex items-center gap-1 cursor-pointer">
+                <Upload size={11} />
+                <span>{lang === 'ta' ? 'படம் பதிவேற்றுக' : 'Upload Photo'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      handleImageCompressAndSet(file, (compressed) => {
+                        setProfileImage(compressed)
+                      })
+                    }
+                  }}
+                />
+              </label>
+
+              {profileImage && profileImage !== defaultImage && (
+                <button
+                  type="button"
+                  onClick={() => setProfileImage(defaultImage)}
+                  className="text-[11px] font-semibold text-slate-500 hover:text-red-600 inline-flex items-center gap-1 cursor-pointer"
+                >
+                  <RotateCcw size={11} />
+                  <span>{lang === 'ta' ? 'இயல்புநிலைக்கு மீட்டமை' : 'Reset to Default'}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -113,7 +209,7 @@ export default function StudentProfile() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 98765 43210"
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium"
+                className="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-[#174A8B]/20"
               />
             </div>
           </div>
@@ -121,10 +217,11 @@ export default function StudentProfile() {
           <div className="pt-2">
             <button
               type="submit"
-              className="bg-[#174A8B] hover:bg-[#123868] text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow flex items-center gap-2 cursor-pointer"
+              disabled={saving}
+              className="bg-[#174A8B] hover:bg-[#123868] text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Save size={15} />
-              <span>{lang === 'ta' ? 'மாற்றங்களைச் சேமி' : 'Save Changes'}</span>
+              <span>{saving ? (lang === 'ta' ? 'சேமிக்கிறது...' : 'Saving...') : (lang === 'ta' ? 'மாற்றங்களைச் சேமி' : 'Save Changes')}</span>
             </button>
           </div>
         </form>

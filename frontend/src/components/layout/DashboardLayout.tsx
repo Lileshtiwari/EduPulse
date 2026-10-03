@@ -79,10 +79,21 @@ function Topbar({ title }: TopbarProps) {
         </button>
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden shadow-xs border border-slate-200"
             style={{ backgroundColor: '#174A8B' }}
           >
-            {user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+            {user?.profile_image ? (
+              <img
+                src={user.profile_image}
+                alt={user.full_name}
+                className="w-full h-full object-cover object-top"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+            )}
           </div>
           <div className="hidden sm:block">
             <p className="text-sm font-medium text-slate-900 leading-tight">{user?.full_name}</p>

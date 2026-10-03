@@ -4,6 +4,15 @@ from typing import List, Dict, Any, Optional
 PUBLIC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "public"))
 ASSET_BASE_URL = "https://edu-pulse-rho.vercel.app"
 
+
+def _resolve_card_url(card_filename: Optional[str], default_filename: str = "student_card.png") -> str:
+    fn = (card_filename or default_filename).strip()
+    if fn.startswith("http://") or fn.startswith("https://") or fn.startswith("data:"):
+        return fn
+    clean = fn.lstrip('/')
+    return f"{ASSET_BASE_URL}/{clean}"
+
+
 def build_official_alert_html_email(
     student_name: str,
     student_id: str,
@@ -25,6 +34,7 @@ def build_official_alert_html_email(
     - KPR Institute logo at bottom (cid:instuite_img)
     """
     course_rows_html = ""
+    card_url = _resolve_card_url(card_filename, "student_card.png")
     for c in courses:
         pct = float(c.get("percentage", 0.0))
         color = "#dc2626" if pct < att_thresh else "#16a34a"
@@ -174,7 +184,7 @@ def build_official_alert_html_email(
                   <!-- Right side: Student Card Avatar Image -->
                   <td width="150" align="center" style="vertical-align:middle;">
                     <div style="width:135px;height:165px;border-radius:16px;overflow:hidden;border:2px solid #e2e8f0;box-shadow:0 4px 12px rgba(0,0,0,0.06);background:#f1f5f9;">
-                      <img src="{ASSET_BASE_URL}/{card_filename or 'student_card.png'}" alt="Student Profile" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                      <img src="{card_url}" alt="Student Profile" style="width:100%;height:100%;object-fit:cover;display:block;" />
                     </div>
                   </td>
                 </tr>
@@ -305,6 +315,8 @@ def build_otp_html_email(
     """
     id_label = "Roll Number" if role.lower() == "student" else "Faculty / Staff ID"
     id_val = identifier or "N/A"
+    default_card = "admin_card.png" if role.lower() == "admin" else ("professor_card.png" if role.lower() == "professor" else "student_card.png")
+    card_url = _resolve_card_url(card_filename, default_card)
 
     return f"""<!DOCTYPE html>
 <html>
@@ -397,7 +409,7 @@ def build_otp_html_email(
                   <!-- Right side: Profile / Role Image -->
                   <td width="130" align="center" style="vertical-align:middle;">
                     <div style="width:120px;height:140px;border-radius:14px;overflow:hidden;border:2px solid #e2e8f0;box-shadow:0 4px 10px rgba(0,0,0,0.06);background:#f1f5f9;">
-                      <img src="{ASSET_BASE_URL}/{card_filename or 'student_card.png'}" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                      <img src="{card_url}" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
                     </div>
                   </td>
                 </tr>
@@ -476,6 +488,8 @@ def build_account_welcome_html_email(
     portal_name = "Student Portal" if role.lower() == "student" else "Faculty Portal"
     id_label = "Roll Number" if role.lower() == "student" else "Faculty ID"
     id_val = identifier or "N/A"
+    default_card = "admin_card.png" if role.lower() == "admin" else ("professor_card.png" if role.lower() == "professor" else "student_card.png")
+    card_url = _resolve_card_url(card_filename, default_card)
 
     course_rows = ""
     if assigned_courses:
@@ -594,7 +608,7 @@ def build_account_welcome_html_email(
                   <!-- Right side: Profile Card Photo -->
                   <td width="135" align="center" style="vertical-align:middle;">
                     <div style="width:125px;height:150px;border-radius:14px;overflow:hidden;border:2px solid #e2e8f0;box-shadow:0 4px 10px rgba(0,0,0,0.06);background:#f1f5f9;">
-                      <img src="{ASSET_BASE_URL}/{card_filename or 'student_card.png'}" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                      <img src="{card_url}" alt="{role}" style="width:100%;height:100%;object-fit:cover;display:block;" />
                     </div>
                   </td>
                 </tr>

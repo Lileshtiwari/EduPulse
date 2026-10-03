@@ -199,12 +199,15 @@ def login_init(
         )
 
         card_fn = (
-            "admin_card.png"
-            if user.role.value == "admin"
-            else (
-                "professor_card.png"
-                if user.role.value == "professor"
-                else "student_card.png"
+            user.profile_image
+            or (
+                "admin_card.png"
+                if user.role.value == "admin"
+                else (
+                    "professor_card.png"
+                    if user.role.value == "professor"
+                    else "student_card.png"
+                )
             )
         )
 
@@ -563,12 +566,15 @@ def resend_otp(
         )
 
         card_fn = (
-            "admin_card.png"
-            if user.role.value == "admin"
-            else (
-                "professor_card.png"
-                if user.role.value == "professor"
-                else "student_card.png"
+            user.profile_image
+            or (
+                "admin_card.png"
+                if user.role.value == "admin"
+                else (
+                    "professor_card.png"
+                    if user.role.value == "professor"
+                    else "student_card.png"
+                )
             )
         )
 

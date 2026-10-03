@@ -22,7 +22,7 @@ def my_profile(current_user: User = Depends(get_current_user)):
         student_id=current_user.student_id, faculty_id=current_user.faculty_id,
         department_id=current_user.department_id, department_name=dept_name,
         section=current_user.section, semester=current_user.semester,
-        phone=current_user.phone, is_active=current_user.is_active,
+        phone=current_user.phone, profile_image=current_user.profile_image, is_active=current_user.is_active,
         lang_pref=current_user.lang_pref, created_at=current_user.created_at,
     )
 
@@ -41,15 +41,19 @@ def update_profile(
         current_user.section = payload.section
     if payload.lang_pref:
         current_user.lang_pref = payload.lang_pref
+    if payload.profile_image is not None:
+        from app.security import save_profile_image_if_base64
+        current_user.profile_image = save_profile_image_if_base64(payload.profile_image)
     db.commit()
     db.refresh(current_user)
+    dept_name = current_user.department_rel.name if current_user.department_rel else None
     return UserOut(
         id=current_user.id, full_name=current_user.full_name,
         email=current_user.email, role=current_user.role,
         student_id=current_user.student_id, faculty_id=current_user.faculty_id,
-        department_id=current_user.department_id,
+        department_id=current_user.department_id, department_name=dept_name,
         section=current_user.section, semester=current_user.semester,
-        phone=current_user.phone, is_active=current_user.is_active,
+        phone=current_user.phone, profile_image=current_user.profile_image, is_active=current_user.is_active,
         lang_pref=current_user.lang_pref, created_at=current_user.created_at,
     )
 
