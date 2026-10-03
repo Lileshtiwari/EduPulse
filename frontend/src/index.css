@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  /* KPRIET Color System */
+  --color-institutional-blue: #174A8B;
+  --color-green-accent: #16865B;
+  --color-action-blue: #2476C7;
+  --color-surface-light: #EAF4FC;
+  --color-bg-main: #F7FAFC;
+  --color-card-white: #FFFFFF;
+  --color-amber-warn: #E5A13D;
+  --color-red-critical: #D64545;
+  --color-text-main: #172B4D;
+  --color-text-secondary: #64748B;
+  --color-border-default: #E2E8F0;
+
+  /* Typography */
+  --font-sans: 'Inter', 'Outfit', system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-action-blue);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .text-main { color: var(--color-text-main); }
+  .text-secondary { color: var(--color-text-secondary); }
+  .bg-surface { background-color: var(--color-surface-light); }
+  .bg-card { background-color: var(--color-card-white); }
+  .border-default { border-color: var(--color-border-default); }
+
+  /* Card shadow */
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.08), 0 1px 2px -1px rgba(23, 43, 77, 0.05);
+  }
+
+  /* Status badge colors */
+  .badge-green {
+    background-color: #DCFCE7;
+    color: #15803D;
+  }
+  .badge-amber {
+    background-color: #FEF3C7;
+    color: #92400E;
+  }
+  .badge-red {
+    background-color: #FEE2E2;
+    color: #991B1B;
+  }
+  .badge-blue {
+    background-color: #DBEAFE;
+    color: #1D4ED8;
+  }
+  .badge-gray {
+    background-color: #F1F5F9;
+    color: #475569;
+  }
+}
