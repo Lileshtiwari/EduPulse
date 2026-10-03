@@ -77,6 +77,9 @@ export default function LandingPage() {
     try {
       const res = await loginInit(email.trim(), password)
       setStep('otp')
+      if (res.dev_otp) {
+        setOtp(res.dev_otp)
+      }
       setInfoMessage(res.message || `A 6-digit verification code has been dispatched to ${email}.`)
     } catch (err: any) {
       setError(err?.response?.data?.detail || (lang === 'ta' ? 'தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்.' : 'Invalid email or password. Please verify your credentials.'))
@@ -106,6 +109,9 @@ export default function LandingPage() {
     setResending(true)
     try {
       const res = await resendOtp(email.trim())
+      if (res.dev_otp) {
+        setOtp(res.dev_otp)
+      }
       setInfoMessage(res.message || `A fresh 6-digit OTP code has been sent to ${email}.`)
     } catch (err: any) {
       setError(err?.response?.data?.detail || (lang === 'ta' ? 'OTP மீண்டும் அனுப்புவதில் தோல்வி.' : 'Failed to resend verification code. Please try again.'))

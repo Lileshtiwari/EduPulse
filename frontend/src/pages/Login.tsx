@@ -24,6 +24,9 @@ export default function LoginPage() {
     try {
       const res = await loginInit(email.trim(), password)
       setStep('otp')
+      if (res.dev_otp) {
+        setOtp(res.dev_otp)
+      }
       setInfoMessage(res.message || `A 6-digit verification code has been dispatched to ${email}.`)
     } catch (err: any) {
       setError(err?.response?.data?.detail || 'Invalid email or password. Please verify credentials.')
@@ -53,6 +56,9 @@ export default function LoginPage() {
     setResending(true)
     try {
       const res = await resendOtp(email.trim())
+      if (res.dev_otp) {
+        setOtp(res.dev_otp)
+      }
       setInfoMessage(res.message || `A fresh 6-digit code has been sent to ${email}.`)
     } catch (err: any) {
       setError(err?.response?.data?.detail || 'Failed to resend code.')

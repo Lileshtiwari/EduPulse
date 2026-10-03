@@ -23,6 +23,7 @@ class OtpSentResponse(BaseModel):
     email: str
     message: str
     role: Optional[str] = None
+    dev_otp: Optional[str] = None
 
 
 class TokenResponse(BaseModel):

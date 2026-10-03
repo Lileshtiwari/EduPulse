@@ -362,11 +362,11 @@ def _dispatch_notification(
 
     if cfg.MOCK_EMAIL:
         otp_hint = ""
-        if notification.subject and "OTP" in notification.subject:
-            import re
-            m = re.search(r'\b(\d{6})\b', notification.subject)
-            if m:
-                otp_hint = f" | OTP: {m.group(1)}"
+        import re
+        text_to_search = f"{notification.subject or ''} {notification.message or ''}"
+        m = re.search(r'\b(\d{6})\b', text_to_search)
+        if m:
+            otp_hint = f" | OTP: {m.group(1)}"
 
         print(
             f"[MOCK EMAIL] To: {notification.recipient_email}"

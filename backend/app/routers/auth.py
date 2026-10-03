@@ -273,15 +273,20 @@ def login_init(
             ),
         )
 
+    is_mock = cfg.MOCK_EMAIL or cfg.ENVIRONMENT == "development"
+    dev_otp_val = otp_code if is_mock else None
+    otp_suffix = f" [Mock Mode: Your OTP is {otp_code}]" if is_mock else ""
+
     return OtpSentResponse(
         status="otp_sent",
         email=user.email,
         message=(
             "A 6-digit verification code has been "
             f"sent to your registered email "
-            f"({user.email})."
+            f"({user.email}).{otp_suffix}"
         ),
         role=user.role.value,
+        dev_otp=dev_otp_val,
     )
 
 
@@ -530,7 +535,7 @@ def resend_otp(
     }
 
     subject = (
-        "[EduPulse] New Login Verification OTP"
+        f"[EduPulse] New Login Verification OTP: {otp_code}"
     )
 
     message = (
@@ -632,14 +637,19 @@ def resend_otp(
             ),
         )
 
+    is_mock = cfg.MOCK_EMAIL or cfg.ENVIRONMENT == "development"
+    dev_otp_val = otp_code if is_mock else None
+    otp_suffix = f" [Mock Mode: Your OTP is {otp_code}]" if is_mock else ""
+
     return OtpSentResponse(
         status="otp_sent",
         email=user.email,
         message=(
             "A fresh 6-digit OTP code has been "
-            f"sent to {user.email}."
+            f"sent to {user.email}.{otp_suffix}"
         ),
         role=user.role.value,
+        dev_otp=dev_otp_val,
     )
 
 

@@ -7,9 +7,9 @@ interface AuthContextType {
   token: string | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
-  loginInit: (email: string, password: string) => Promise<{ status: string; email: string; message: string; role?: string }>
+  loginInit: (email: string, password: string) => Promise<{ status: string; email: string; message: string; role?: string; dev_otp?: string }>
   verifyOtp: (email: string, otp: string) => Promise<User>
-  resendOtp: (email: string) => Promise<{ status: string; email: string; message: string }>
+  resendOtp: (email: string) => Promise<{ status: string; email: string; message: string; dev_otp?: string }>
   logout: () => void
   updateUser: (updatedUser: User) => void
 }
